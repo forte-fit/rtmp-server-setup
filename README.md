@@ -20,7 +20,7 @@ Each RTMP server is deployed for redundancy ([ref](https://fortefit.atlassian.ne
 Find [load balancers here >>](https://portal.azure.com/#view/Microsoft_Azure_Network/LoadBalancingHubMenuBlade/~/loadBalancers)
 
 | Load balancer | Location     | Frontend Ip    |
-|---------------|--------------|----------------|
+| ------------- | ------------ | -------------- |
 | QA-LB         | EAST US      | 52.254.75.4    |
 | QA-LB-AUS     | AUS          | 20.213.248.10  |
 | QA-LB-EU      | North Europe | 52.156.204.252 |
@@ -63,9 +63,27 @@ VM specification
 - Set Outbound rule to open all port
 
 
-# Agora SDK setup 
+## Agora SDK setup 
 
-To install the agora SDK run the following command on the newly created VM.
+To install the agora SDK run the following command on the newly created VM. Run the following commands
 
 ```
+ cd /home/forte
 ```
+```
+wget https://github.com/AgoraIO-Solutions/server_side_custom_video_source/raw/master/release/dist-agora-rtmp.tar.gz
+```
+```
+tar -xvzf dist-agora-rtmp.tar.gz
+```
+```
+cd dist-agora-rtmp
+```
+```
+sudo ./install.sh
+```
+Reboot the box with `sudo reboot`
+
+## Test
+
+Test the stream at rtmp://FrontendIP:1935/live?appid=xxxxxxxxxxxxxxxxxxxxx&channel=xxxxxxxxxxxxxxxxxxxxx&uid=2959968645&abr=150000&dual=true&dfps=24&dvbr=500000&dwidth=640&dheight=360&end=true
