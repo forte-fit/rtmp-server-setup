@@ -46,7 +46,18 @@ Find [load balancers here >>](https://portal.azure.com/#view/Microsoft_Azure_Net
 
 ## Deploying a VM
 
-A new virtual machine can be deployed on the azure portal. 
+The current deployed vm has port 2222 for SSH via the frontend Ip
+
+| Load balancer | Location     | Frontend Ip    | Link    |
+| ------------- | ------------ | -------------- | -------------- |
+| RTMP-20-A         | North America      | 52.254.75.4    |[Azure](https://portal.azure.com/#@opsforte.onmicrosoft.com/resource/subscriptions/8dcb675f-f4f6-4659-afc3-81c779dd6266/resourceGroups/shared/providers/Microsoft.Compute/virtualMachines/RTMP-20-A/overview)|
+| RTMP-20-B     | EU          | 52.156.204.252  |[Azure](https://portal.azure.com/#@opsforte.onmicrosoft.com/resource/subscriptions/8dcb675f-f4f6-4659-afc3-81c779dd6266/resourceGroups/shared/providers/Microsoft.Compute/virtualMachines/RTMP-20-B/overview)|
+| RTMP-20-C      | AUS | 20.213.248.10 |[Azure](https://portal.azure.com/#@opsforte.onmicrosoft.com/resource/subscriptions/8dcb675f-f4f6-4659-afc3-81c779dd6266/resourceGroups/shared/providers/Microsoft.Compute/virtualMachines/RTMP-20-C/overview)|
+| RTMP-20-QA      | North America | 20.232.116.15 |[Azure](https://portal.azure.com/#@opsforte.onmicrosoft.com/resource/subscriptions/8dcb675f-f4f6-4659-afc3-81c779dd6266/resourceGroups/shared/providers/Microsoft.Compute/virtualMachines/RTMP-20-qA/overview)|
+
+`ssh -i -/. ssh/rtmp-20-keys pem forte@FrontEndIP -p 2222`
+
+**A new virtual machine can be deployed on the azure portal.** 
 
 NB: 
 VM specification
@@ -87,3 +98,32 @@ Reboot the box with `sudo reboot`
 ## Test
 
 Test the stream at rtmp://FrontendIP:1935/live?appid=xxxxxxxxxxxxxxxxxxxxx&channel=xxxxxxxxxxxxxxxxxxxxx&uid=2959968645&abr=150000&dual=true&dfps=24&dvbr=500000&dwidth=640&dheight=360&end=true
+
+## Datadog integration
+
+REF:
+- https://docs.datadoghq.com/agent/logs/?tab=tailfiles
+- https://docs.datadoghq.com/agent/logs/?tab=tailfiles
+
+Install Datadog agent (currently v7) using
+
+```shell
+DD_AGENT_MAJOR_VERSION=7 DD_API_KEY=8cbeadcadc78159956f4814379b8f61b DD_SITE="us3.datadoghq.com" bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script.sh)"
+```
+You can update datadog integration using the Datadog Agent configuration: /etc/datadog-agent/datadog.yaml
+
+To collect live tail agora logs: 
+- Create a custom agora configuration `mkdir -p /etc/datadog-agent/conf.d/agora.d`
+- Create a tail log configuration file directed at /tmp/agora.log `nano conf.yaml`
+
+```
+logs:
+  - type: file
+    path: "/tmp/agora.log"
+    service: “RTMPG”
+    source: “AGORA_QA”
+```
+
+- Activate live tail on agent configuration file `logs_enabled: false`
+- Restart datadog agent `systemctl restart datadog-agent`
+
